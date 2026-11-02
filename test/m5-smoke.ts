@@ -42,6 +42,7 @@ check('URL import + empty-state keys exist in zh+en', missing.length === 0, miss
 const root = dirname(fileURLToPath(import.meta.url))
 const indexRaw = JSON.parse(await readFile(join(root, '..', 'market', 'index.json'), 'utf8'))
 const indexUrl = 'https://example.invalid/market/index.json'
+let newestMarketVersion = ''
 try {
   const index = parseMarketIndex(indexRaw, indexUrl)
   check('market/index.json passes the format-1 validator', index.format === 1)
@@ -53,6 +54,7 @@ try {
     && plugin.versions.every((version, at) => at === 0 || plugin.versions[at - 1].publishTimestamp >= version.publishTimestamp)
     && plugin.versions[0].source.type === 'npm'
     && plugin.versions[0].engines.dsh === '>=0.2.1-rc.2')
+  newestMarketVersion = plugin?.versions[0]?.version ?? ''
 } catch (error) {
   check('market/index.json passes the format-1 validator', false, error)
 }
@@ -63,7 +65,7 @@ const pkg = JSON.parse(await readFile(join(root, '..', 'package.json'), 'utf8'))
   engines: { dsh: string }
   keywords: string[]
 }
-check('package.json version is the newest market version', pkg.version === '1.1.0' && pkg.engines.dsh === '>=0.2.1-rc.2')
+check('package.json version is the newest market version', pkg.version === newestMarketVersion && pkg.engines.dsh === '>=0.2.1-rc.2')
 check('package.json carries the dsh-plugin keyword', pkg.keywords.includes('dsh-plugin'))
 
 if (failures > 0) {

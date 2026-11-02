@@ -14,7 +14,7 @@ import { CapabilitiesPage, type CapabilitiesActions, type CapabilitiesLoadOutcom
 import { decodeUtf8, downloadBytes, downloadText, zipFiles } from './files.ts'
 import { PanelIcon } from './PanelIcon.tsx'
 import { en, zh } from './locales.ts'
-import type { CapabilityManagerRemote, LocaleLike, RemoteAccessLike, RemoteContribution, SlotsLike } from './shims.ts'
+import type { CapabilityManagerRemote, Disposable, LocaleLike, RemoteAccessLike, RemoteContribution, SlotsLike } from './shims.ts'
 
 export const NS = 'capManager'
 
@@ -233,7 +233,12 @@ export async function apply(ctx: Context): Promise<void> {
       },
     }
 
-    remoteAccess.whenAccess('capabilityManager/list', function* () {
+    // Install the panels while the peer may call `capabilityManager/list`.
+    // `whenAccess` exists only from 0.2.2-alpha; runtimes without it
+    // (0.2.1-rc.x, incl. the official desktop build) enforce access per call
+    // at the gateway and the local peer owns the profile, so install
+    // unconditionally there.
+    const installPanels = function* (): Generator<Disposable> {
       yield slots.inject('main', function* () {
         yield slots.register({
           name: 'main',
@@ -249,6 +254,11 @@ export async function apply(ctx: Context): Promise<void> {
         label: () => t('panel'),
         locale: NS,
       }, PanelIcon))
-    })
+    }
+    if (typeof remoteAccess.whenAccess === 'function') {
+      remoteAccess.whenAccess('capabilityManager/list', installPanels)
+    } else {
+      for (const dispose of installPanels()) ctx.effect(() => dispose, 'dsh-cap-manager panels')
+    }
   })
 }

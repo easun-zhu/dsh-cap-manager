@@ -47,7 +47,8 @@ interface RootState {
 /** Status view of one project server as consumed by `list`. */
 export interface ProjectServerStatus {
   readonly status: McpStatus
-  readonly toolCount: number
+  /** Registered tool count; undefined when the runtime exposes no tool listing. */
+  readonly toolCount: number | undefined
   readonly error: string | undefined
 }
 
@@ -149,10 +150,10 @@ export class ProjectMounter {
       const error = state.errors.get(server.serverName) ?? server.evalError
       const facts = mounted === undefined
         ? undefined
-        : fiberFacts(mounted.fiber as unknown as FiberLike, counts.get(server.serverName) ?? 0)
+        : fiberFacts(mounted.fiber as unknown as FiberLike, counts?.get(server.serverName))
       status.set(server.serverName, {
         status: error !== undefined ? 'failed' : resolveStatus(true, facts),
-        toolCount: facts?.toolCount ?? 0,
+        toolCount: facts?.toolCount,
         error,
       })
     }

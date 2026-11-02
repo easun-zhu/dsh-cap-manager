@@ -136,9 +136,9 @@ export class CcPluginStore {
   }
 
   /** Live mount status for one plugin's servers (panel cards). */
-  async serverStatuses(name: string): Promise<Record<string, { status: McpStatus; toolCount: number; error?: string }>> {
+  async serverStatuses(name: string): Promise<Record<string, { status: McpStatus; toolCount: number | undefined; error?: string }>> {
     const mounted = this.mounts.get(name)
-    const view: Record<string, { status: McpStatus; toolCount: number; error?: string }> = {}
+    const view: Record<string, { status: McpStatus; toolCount: number | undefined; error?: string }> = {}
     const plugin = this.installedByName(name)
     if (plugin === undefined) return view
     const counts = collectToolCounts(this.ctx, plugin.serverNames)
@@ -153,7 +153,7 @@ export class CcPluginStore {
         }
         continue
       }
-      const facts = fiberFacts(entry.fiber as unknown as FiberLike, counts.get(serverName) ?? 0)
+      const facts = fiberFacts(entry.fiber as unknown as FiberLike, counts?.get(serverName))
       const status = resolveStatus(true, facts)
       view[serverName] = { status, toolCount: facts.toolCount, ...(facts.fiberError !== undefined ? { error: facts.fiberError } : {}) }
     }

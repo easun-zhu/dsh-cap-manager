@@ -62,8 +62,8 @@ export interface McpServerEntry {
   readonly summary: string
   readonly enabled: boolean
   readonly status: McpStatus
-  /** Number of registered `mcp__<serverName>__*` tools. */
-  readonly toolCount: number
+  /** Number of registered `mcp__<serverName>__*` tools; undefined when the runtime exposes no tool listing. */
+  readonly toolCount: number | undefined
   /** Failure detail from the fiber or the mounter, when present. */
   readonly error?: string
   /** The row's config with sensitive values masked; absent when unreadable. */
@@ -322,7 +322,8 @@ export interface BackupEntry {
 /** Live status of one MCP server an installed plugin mounted. */
 export interface CcServerStatus {
   readonly status: McpStatus
-  readonly toolCount: number
+  /** Registered tool count; undefined when the runtime exposes no tool listing. */
+  readonly toolCount: number | undefined
   readonly error?: string
 }
 

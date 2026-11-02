@@ -43,7 +43,8 @@ interface ToolsLike {
 export interface RowFacts {
   readonly fiberState: string | undefined
   readonly fiberError: string | undefined
-  readonly toolCount: number
+  /** Registered tool count; undefined when the runtime exposes no tool listing. */
+  readonly toolCount: number | undefined
 }
 
 /** Normalize a cordis FiberState (numeric enum or string) to one name. */
@@ -59,11 +60,11 @@ function stateName(state: number | string | undefined): string | undefined {
   }
 }
 
-/** Count registered `mcp__<serverName>__*` tools for the given names. */
-export function collectToolCounts(ctx: Context, serverNames: readonly string[]): Map<string, number> {
-  const counts = new Map<string, number>(serverNames.map(name => [name, 0]))
+/** Count registered `mcp__<serverName>__*` tools for the given names; undefined when the runtime's tools service has no listing API (0.2.1-rc.x). */
+export function collectToolCounts(ctx: Context, serverNames: readonly string[]): Map<string, number> | undefined {
   const tools = ctx.get('tools') as ToolsLike | undefined
-  if (tools === undefined) return counts
+  if (tools === undefined || typeof tools.definitions !== 'function') return undefined
+  const counts = new Map<string, number>(serverNames.map(name => [name, 0]))
   for (const definition of tools.definitions()) {
     const match = /^mcp__([A-Za-z0-9_-]{1,32})__/.exec(definition.name)
     if (match === null) continue
@@ -74,7 +75,7 @@ export function collectToolCounts(ctx: Context, serverNames: readonly string[]):
 }
 
 /** Facts of one directly held fiber (project mounts); tool count supplied by the caller. */
-export function fiberFacts(fiber: FiberLike, toolCount: number): RowFacts {
+export function fiberFacts(fiber: FiberLike, toolCount: number | undefined): RowFacts {
   return {
     fiberState: stateName(fiber.state),
     fiberError: errorMessage(fiber._error),
@@ -103,7 +104,7 @@ export function collectRowFacts(ctx: Context, rows: readonly { id: string; serve
     facts.set(row.id, {
       fiberState: state?.state,
       fiberError: state?.error,
-      toolCount: toolCounts.get(row.serverName) ?? 0,
+      toolCount: toolCounts?.get(row.serverName),
     })
   }
   return facts
@@ -113,12 +114,13 @@ export function collectRowFacts(ctx: Context, rows: readonly { id: string; serve
 export function resolveStatus(enabled: boolean, facts: RowFacts | undefined): McpStatus {
   if (!enabled) return 'disabled'
   if (facts === undefined) return 'stopped'
+  // Without a tool listing (0.2.1-rc.x) the fiber state alone decides.
   switch (facts.fiberState) {
-    case 'active': return facts.toolCount > 0 ? 'connected' : 'connecting'
+    case 'active': return facts.toolCount === undefined || facts.toolCount > 0 ? 'connected' : 'connecting'
     case 'failed': return 'failed'
     case 'loading': case 'pending': return 'connecting'
     case 'disposed': case 'unloading': return 'stopped'
-    default: return facts.toolCount > 0 ? 'connected' : 'stopped'
+    default: return facts.toolCount !== undefined && facts.toolCount > 0 ? 'connected' : 'stopped'
   }
 }
 

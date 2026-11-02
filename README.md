@@ -5,7 +5,7 @@
 **One panel for MCP servers, skills & Claude Code plugins in the
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI.**
 
-![version](https://img.shields.io/badge/version-1.1.0-4D6BFE)
+![version](https://img.shields.io/badge/version-1.1.1-4D6BFE)
 ![dsh](https://img.shields.io/badge/DeepSeek%20Harness-%3E%3D%200.2.1--rc.2-4D6BFE)
 ![market](https://img.shields.io/badge/claude--plugins--official-315%2B-8A5BE8)
 ![license](https://img.shields.io/badge/license-MIT-green)
@@ -30,7 +30,7 @@ A [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh) plug
   skills light up through a native skill provider; plugin `mcpServers` mount as live
   MCP connections.
 
-Full design & compatibility notes: [DESIGN.md](./DESIGN.md). Current release: **v1.1.0**
+Full design & compatibility notes: [DESIGN.md](./DESIGN.md). Current release: **v1.1.1**
 (adds the Claude Code plugin source).
 
 ## 🖼️ Screenshots
@@ -68,9 +68,9 @@ tool count, and an enable switch (a disabled row keeps its config but does not m
 
 ```sh
 # Web UI
-dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
 # Desktop client
-dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
 ```
 
 Replace `web` / `desktop` with your own profile name, restart dsh, then open
@@ -83,7 +83,7 @@ dsh plugin --profile web add dsh-cap-manager
 ```
 
 > If pnpm's release cooldown resolves an older release, pin the version explicitly:
-> `dsh plugin --profile web add dsh-cap-manager@1.1.0`.
+> `dsh plugin --profile web add dsh-cap-manager@1.1.1`.
 > (The `github:` git shorthand builds from source — the repository ships no compiled `lib/`;
 > prefer the Release tarball or npm.)
 

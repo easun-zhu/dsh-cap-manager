@@ -5,7 +5,7 @@
 **在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI 中
 一个面板统一管理 MCP 服务、技能与 Claude Code 插件。**
 
-![version](https://img.shields.io/badge/version-1.1.0-4D6BFE)
+![version](https://img.shields.io/badge/version-1.1.1-4D6BFE)
 ![dsh](https://img.shields.io/badge/DeepSeek%20Harness-%3E%3D%200.2.1--rc.2-4D6BFE)
 ![market](https://img.shields.io/badge/claude--plugins--official-315%2B-8A5BE8)
 ![license](https://img.shields.io/badge/license-MIT-green)
@@ -28,7 +28,7 @@ Web UI 侧边栏增加 **MCP 与技能** 面板：
   市场（315+ 个插件）：安装、更新、卸载、开关。插件技能经原生 skill provider 实时
   供给；manifest 里的 `mcpServers` 挂载为实时 MCP 连接。
 
-完整设计与兼容性说明见 [DESIGN.md](./DESIGN.md)。当前版本：**v1.1.0**
+完整设计与兼容性说明见 [DESIGN.md](./DESIGN.md)。当前版本：**v1.1.1**
 （新增 Claude Code 插件源）。
 
 ## 🖼️ 截图
@@ -65,9 +65,9 @@ Web UI 侧边栏增加 **MCP 与技能** 面板：
 
 ```sh
 # 浏览器 Web UI
-dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
 # 桌面客户端
-dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
 ```
 
 `web` / `desktop` 换成你自己的 profile 名即可；重启 dsh，然后在左侧边栏打开
@@ -80,7 +80,7 @@ dsh plugin --profile web add dsh-cap-manager
 ```
 
 > 若 pnpm 的发布冷却期解析到旧版本，可显式固定版本：
-> `dsh plugin --profile web add dsh-cap-manager@1.1.0`。
+> `dsh plugin --profile web add dsh-cap-manager@1.1.1`。
 > （`github:` git 简写等于从源码装 —— 仓库不含编译产物 `lib/`，优先用 Release
 > tarball 或 npm。）
 

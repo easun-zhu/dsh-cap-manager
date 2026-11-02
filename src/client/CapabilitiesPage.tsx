@@ -417,7 +417,8 @@ function McpCard({ t, row, projectRoot, actions, runAction, onNotice, onOpen }: 
     : row.status === 'connecting' ? 'info'
       : row.status === 'failed' ? 'danger' : 'neutral'
   const statusText = row.status === 'connected'
-    ? `${t('statusConnected')} · ${t('toolsCount', { count: String(row.toolCount) })}`
+    ? row.toolCount === undefined ? t('statusConnected')
+      : `${t('statusConnected')} · ${t('toolsCount', { count: String(row.toolCount) })}`
     : row.status === 'stopped' && row.scope === 'project' ? t('statusNotMounted')
       : t(`status${capitalize(row.status)}`)
   return (

@@ -244,7 +244,7 @@ function CcPluginCard({ t, entry, busy, onToggle, onUpdate, onUninstall }: {
           <span className="cap-dot" data-state={view.status} />
           <span className="cap-cc-serverText">
             {name} · {t(`status${capitalize(view.status)}`)}
-            {view.toolCount > 0 ? ` · ${t('toolsCount', { count: String(view.toolCount) })}` : ''}
+            {view.toolCount !== undefined && view.toolCount > 0 ? ` · ${t('toolsCount', { count: String(view.toolCount) })}` : ''}
             {view.error === undefined ? '' : ` — ${view.error}`}
           </span>
         </span>
