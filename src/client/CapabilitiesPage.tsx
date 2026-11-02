@@ -179,7 +179,9 @@ export function CapabilitiesPage({ t, load, actions }: CapabilitiesPageProps): R
 
   const needle = query.trim().toLowerCase()
   const mcp = state.phase === 'loaded'
-    ? state.value.mcp.filter(row => needle === '' || row.serverName.toLowerCase().includes(needle))
+    ? state.value.mcp.filter(row => needle === ''
+      || row.serverName.toLowerCase().includes(needle)
+      || (row.plugin ?? '').toLowerCase().includes(needle))
     : []
   const skills = state.phase === 'loaded'
     ? state.value.skills.filter(row => needle === '' || row.name.toLowerCase().includes(needle)
@@ -382,6 +384,7 @@ function McpList({ t, rows, profileName, projectTitle, projectRoot, actions, run
     { key: 'global', label: t('groupGlobal'), rows: rows.filter(row => row.scope === 'global') },
     { key: 'profile', label: t('groupProfile', { name: profileName }), rows: rows.filter(row => row.scope === 'profile') },
     { key: 'preset', label: t('groupPreset'), rows: rows.filter(row => row.scope === 'preset') },
+    { key: 'plugin', label: t('groupCcPlugin'), rows: rows.filter(row => row.scope === 'plugin') },
   ]
   return <>{groups.filter(group => group.rows.length > 0).map(group => (
     <section key={group.key} className="cap-group">
@@ -432,7 +435,8 @@ function McpCard({ t, row, projectRoot, actions, runAction, onNotice, onOpen }: 
             ) : (
               <span className="cap-cardTitle">{row.serverName}</span>
             )}
-            <Tag tone="quiet">{t(`scope${capitalize(row.scope)}`)}</Tag>
+            {/* Plugin rows attribute their provider by name; other scopes use the scope label. */}
+            <Tag tone="quiet">{row.scope === 'plugin' && row.plugin !== undefined ? row.plugin : t(`scope${capitalize(row.scope)}`)}</Tag>
             <Tag tone="quiet">{row.transport === 'unknown' ? '?' : row.transport}</Tag>
             <Tag tone={statusTone}>
               <span className="cap-dot" data-state={row.status} />{statusText}
@@ -475,6 +479,8 @@ function McpCard({ t, row, projectRoot, actions, runAction, onNotice, onOpen }: 
               }}>{t('removeServer')}</button>
           </div>
         </div>
+      ) : row.scope === 'plugin' ? (
+        <div className="cap-cardFoot"><span className="cap-cardFootNote">{t('readonlyRow')}</span></div>
       ) : undefined}
     </li>
   )

@@ -6,7 +6,7 @@
 一个面板统一管理 MCP 服务、技能与 Claude Code 插件。**
 
 [![npm](https://img.shields.io/npm/v/dsh-cap-manager?logo=npm&color=cb3837)](https://www.npmjs.com/package/dsh-cap-manager)
-![version](https://img.shields.io/badge/version-1.1.1-4D6BFE)
+![version](https://img.shields.io/badge/version-1.2.0-4D6BFE)
 ![dsh](https://img.shields.io/badge/DeepSeek%20Harness-%3E%3D%200.2.1--rc.2-4D6BFE)
 ![market](https://img.shields.io/badge/claude--plugins--official-315%2B-8A5BE8)
 ![license](https://img.shields.io/badge/license-MIT-green)
@@ -29,8 +29,8 @@ Web UI 侧边栏增加 **MCP 与技能** 面板：
   市场（315+ 个插件）：安装、更新、卸载、开关。插件技能经原生 skill provider 实时
   供给；manifest 里的 `mcpServers` 挂载为实时 MCP 连接。
 
-完整设计与兼容性说明见 [DESIGN.md](./DESIGN.md)。当前版本：**v1.1.1**
-（新增 Claude Code 插件源）。
+完整设计与兼容性说明见 [DESIGN.md](./DESIGN.md)。当前版本：**v1.2.0**
+（MCP 页新增只读的 Claude Code 插件服务分组）。
 
 ## 🖼️ 截图
 
@@ -69,15 +69,15 @@ dsh plugin --profile web add dsh-cap-manager
 ```
 
 > 若 pnpm 的发布冷却期拒绝解析刚发的版本，可显式固定版本：
-> `dsh plugin --profile web add dsh-cap-manager@1.1.1`。
+> `dsh plugin --profile web add dsh-cap-manager@1.2.0`。
 
 或安装 Release tarball（效果相同，不依赖 npm）：
 
 ```sh
 # 浏览器 Web UI
-dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
+dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.2.0/dsh-cap-manager-1.2.0.tgz
 # 桌面客户端
-dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
+dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.2.0/dsh-cap-manager-1.2.0.tgz
 ```
 
 `web` / `desktop` 换成你自己的 profile 名即可；重启 dsh，然后在左侧边栏打开
@@ -170,7 +170,7 @@ mcpServers:
 | **市场** | 315+ 个插件，宿主 10 分钟缓存，刷新按钮强制重拉，支持搜索 |
 | **安装** | 下载 pin 住的 GitHub tarball（codeload），严格 tar 解包器落盘（逃逸路径拒绝、符号链接跳过），存入 `~/.dsh/cap-manager/plugins/store/<名称>/<版本>/` |
 | **技能** | 插件的 `skills/*/SKILL.md` 经 `ctx.skills` provider 实时供给 —— 启用即出现在技能页的只读插件组（rank 排在你自己的技能之后，同名时用户技能优先） |
-| **MCP 服务** | manifest 声明的 `mcpServers` 挂载为实时连接 —— 与项目级服务同一套转换与 diff/挂载纪律，含跨层 `serverName` 预检；卡片显示实时状态与工具数 |
+| **MCP 服务** | manifest 声明的 `mcpServers` 挂载为实时连接 —— 与项目级服务同一套转换与 diff/挂载纪律，含跨层 `serverName` 预检；同时出现在 MCP 服务页的只读「Claude Code 插件」分组（实时状态、工具数、来源插件），随插件开关启停 |
 | **开关** | 技能 + MCP 一起即时启停 |
 | **精确更新** | 点「刷新市场」顺带取 marketplace 仓库的 HEAD commit sha，每个已装插件（外部 git 源比对条目 sha，仓库内源比对 HEAD sha）都得到精确的"有更新"判定；sha-pin 源显示更新角标。点「更新」先下载并**逐字节内容比对**：相同只采纳新 pin 不重装，不同才重装 |
 | **卸载** | 卸挂载、删 store 目录、清登记（`registry.json` 原子写 + `.cap-bak` 历史） |

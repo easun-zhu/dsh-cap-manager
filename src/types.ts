@@ -26,8 +26,8 @@ declare module '@deepseek-ai/dsh-typert-protocol' {
   }
 }
 
-/** Where one MCP server row is persisted. */
-export type McpScope = 'global' | 'profile' | 'preset' | 'project'
+/** Where one MCP server row lives. `plugin` rows are mounted by an installed Claude Code plugin, not persisted by this plugin. */
+export type McpScope = 'global' | 'profile' | 'preset' | 'project' | 'plugin'
 
 /** Connection state derived from the loader fiber and the tools registry. */
 export type McpStatus = 'connected' | 'connecting' | 'failed' | 'stopped' | 'disabled'
@@ -70,6 +70,8 @@ export interface McpServerEntry {
   readonly config?: McpConfigView
   /** Whether this plugin may edit, toggle, or remove the row. */
   readonly managed: boolean
+  /** Owning installed plugin name; present on `plugin`-scope rows. */
+  readonly plugin?: string
 }
 
 /** Write-target scope for management operations. */

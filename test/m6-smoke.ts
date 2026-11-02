@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path'
 import { gzipSync } from 'fflate'
 import { extractTar, parseMarketIndex, CcMarket, isExactPin } from '../src/cc-market.ts'
 import type { MarketEntry } from '../src/cc-market.ts'
-import { viewToPlain } from '../src/cc-store.ts'
+import { CcPluginStore, viewToPlain } from '../src/cc-store.ts'
 import { convertMcpImport } from '../src/import-mcp.ts'
 
 let failures = 0
@@ -170,6 +170,45 @@ try {
   check('forced refresh offline serves the stale cache', stale.pin === pinned.pin && stale.entries.length === 1)
 } finally {
   await rm(tempDir, { recursive: true, force: true })
+}
+
+// ---- listServerRows: read-only MCP rows of enabled plugins ----
+const storeDir = await mkdtemp(join(tmpdir(), 'cc-store-'))
+try {
+  const pluginFiles = new Map<string, Buffer>([
+    ['.claude-plugin/plugin.json', Buffer.from(JSON.stringify({
+      name: 'demo', version: '1.0.0',
+      mcpServers: {
+        demohttp: { type: 'http', url: 'https://mcp.example.com/mcp', headers: { 'X-Api-Token': 'secret' } },
+      },
+    }))],
+    ['skills/demo/SKILL.md', Buffer.from('---\nname: demo\ndescription: d\n---\nbody')],
+  ])
+  // Structural ctx: no skills registry, and ctx.plugin always fails so mounts
+  // land in mountErrors — exactly the surfaced-as-failed path the rows carry.
+  const fakeCtx = {
+    get: () => undefined,
+    effect: () => () => undefined,
+    plugin: () => { throw new Error('no runtime in smoke test') },
+    logger: { warn: () => undefined },
+  }
+  const store = new CcPluginStore(fakeCtx as never, {
+    async fetchPluginFiles() { return { files: pluginFiles, pin: 'deadbeef' } },
+  }, { baseDir: storeDir, reservedNames: () => [], onChanged: () => undefined })
+  await new Promise(resolve => { setTimeout(resolve, 20) }) // let the constructor's load() settle
+  await store.install({ name: 'demo' } as MarketEntry, 'market@pin-1')
+  const rows = await store.listServerRows()
+  check('plugin server row carries owning plugin + masked view',
+    rows.length === 1 && rows[0].plugin === 'demo' && rows[0].serverName === 'demohttp'
+      && rows[0].view?.transport === 'streamable-http' && rows[0].view?.url === 'https://mcp.example.com/mcp'
+      && rows[0].view?.headers?.['X-Api-Token'] === null, rows)
+  check('unmountable plugin server surfaces as failed with its error',
+    rows[0]?.status === 'failed' && rows[0]?.error !== undefined, rows[0])
+  await store.setEnabled('demo', false)
+  check('disabled plugins contribute no rows', (await store.listServerRows()).length === 0)
+  await store.close()
+} finally {
+  await rm(storeDir, { recursive: true, force: true })
 }
 
 if (failures > 0) {

@@ -109,7 +109,8 @@ export class CapabilityManagerService extends TypertRemoteService {
   /**
    * Compose MCP-client rows across every layer, read the global skill catalog,
    * and — when the request names a project — the project's `.dsh/mcp.yml`
-   * servers with their live mount status.
+   * servers with their live mount status. Servers mounted by enabled Claude
+   * Code plugins join as read-only `plugin`-scope rows.
    */
   @Remote
   async list(request?: ListRequest): Promise<CapabilityListResult> {
@@ -183,6 +184,25 @@ export class CapabilityManagerService extends TypertRemoteService {
         active: view.active,
         ...(view.fileError !== undefined ? { fileError: view.fileError } : {}),
       }
+    }
+
+    // Read-only rows: MCP servers mounted by enabled Claude Code plugins (M6) —
+    // the skills tab's provider rows are their counterpart.
+    for (const row of await this.ccStore.listServerRows()) {
+      mcp.push({
+        id: `cc/${row.plugin}/${row.serverName}`,
+        serverName: row.serverName,
+        scope: 'plugin',
+        plugin: row.plugin,
+        transport: row.view?.transport ?? 'unknown',
+        summary: summaryOf(row.view),
+        enabled: true,
+        status: row.status,
+        toolCount: row.toolCount,
+        config: row.view,
+        managed: false,
+        ...(row.error !== undefined ? { error: row.error } : {}),
+      })
     }
 
     return {

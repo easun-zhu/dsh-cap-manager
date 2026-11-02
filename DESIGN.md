@@ -314,7 +314,7 @@ interface ChangeOutcome {
 
 | 方法 | 入参 | 出参 | 说明 |
 |---|---|---|---|
-| `list(request?)` | `{projectRoot?}` | `{ mcp: McpServerEntry[]; skills: SkillEntry[]; project?: {root, title, active, fileError?} }` | 全局/Profile/preset 行 + （带 projectRoot 时）该项目的服务器与挂载状态 |
+| `list(request?)` | `{projectRoot?}` | `{ mcp: McpServerEntry[]; skills: SkillEntry[]; project?: {root, title, active, fileError?} }` | 全局/Profile/preset 行 + （带 projectRoot 时）该项目的服务器与挂载状态 + 已启用 CC 插件挂载的服务器（只读 `plugin` 行，带来源插件名，1.2.x） |
 | `listProjects()` | — | `ProjectInfo[] = {root, title, liveSessions, hasConfig}` | `workspaceRegistry.list()` ∪ 活动会话根（realpath 归一），活动数排序 |
 | `setActiveProject` | `{root?}` | `void` | 面板锁定根（undefined 释放）；锁 = 无会话也保持挂载 |
 | `writeMcp` | `{scope, projectRoot?, config: McpConfig, enabled}` | `ChangeOutcome` | 新增或整体覆盖编辑（按 serverName 定位）；scope='project' 写 `.dsh/mcp.yml` |

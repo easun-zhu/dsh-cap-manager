@@ -6,7 +6,7 @@
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI.**
 
 [![npm](https://img.shields.io/npm/v/dsh-cap-manager?logo=npm&color=cb3837)](https://www.npmjs.com/package/dsh-cap-manager)
-![version](https://img.shields.io/badge/version-1.1.1-4D6BFE)
+![version](https://img.shields.io/badge/version-1.2.0-4D6BFE)
 ![dsh](https://img.shields.io/badge/DeepSeek%20Harness-%3E%3D%200.2.1--rc.2-4D6BFE)
 ![market](https://img.shields.io/badge/claude--plugins--official-315%2B-8A5BE8)
 ![license](https://img.shields.io/badge/license-MIT-green)
@@ -31,8 +31,8 @@ A [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (dsh) plug
   skills light up through a native skill provider; plugin `mcpServers` mount as live
   MCP connections.
 
-Full design & compatibility notes: [DESIGN.md](./DESIGN.md). Current release: **v1.1.1**
-(adds the Claude Code plugin source).
+Full design & compatibility notes: [DESIGN.md](./DESIGN.md). Current release: **v1.2.0**
+(MCP servers mounted by Claude Code plugins join the MCP tab as read-only rows).
 
 ## 🖼️ Screenshots
 
@@ -72,15 +72,15 @@ dsh plugin --profile web add dsh-cap-manager
 ```
 
 > If pnpm's release cooldown refuses the fresh release, pin the version explicitly:
-> `dsh plugin --profile web add dsh-cap-manager@1.1.1`.
+> `dsh plugin --profile web add dsh-cap-manager@1.2.0`.
 
 Or install a Release tarball (works the same, no npm involved):
 
 ```sh
 # Web UI
-dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
+dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.2.0/dsh-cap-manager-1.2.0.tgz
 # Desktop client
-dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.1/dsh-cap-manager-1.1.1.tgz
+dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.2.0/dsh-cap-manager-1.2.0.tgz
 ```
 
 Replace `web` / `desktop` with your own profile name, restart dsh, then open
@@ -181,7 +181,7 @@ The panel's third tab manages Claude Code plugins from Anthropic's official
 | **Market** | 315+ plugins, cached 10 min on the host, refresh button forces a refetch, with search |
 | **Install** | downloads the pinned GitHub tarball (codeload), unpacks with a strict tar reader (traversal paths rejected, symlinks skipped), stores under `~/.dsh/cap-manager/plugins/store/<name>/<version>/` |
 | **Skills** | `skills/*/SKILL.md` served live through a `ctx.skills` provider — they appear in the Skills tab under a read-only plugin group the moment the plugin is enabled (ranked below your own skills, so a same-name user skill wins) |
-| **MCP servers** | `mcpServers` from each plugin's manifest mount as live connections — the same converter and diff/mount discipline as project-level servers, including the cross-layer `serverName` precheck; the card shows live status and tool counts |
+| **MCP servers** | `mcpServers` from each plugin's manifest mount as live connections — the same converter and diff/mount discipline as project-level servers, including the cross-layer `serverName` precheck; they also appear in the MCP servers tab under a read-only *Claude Code plugins* group (live status, tool counts, owning plugin), toggled by the plugin's own switch |
 | **Toggle** | flips skills and MCP servers on/off instantly |
 | **Precise updates** | "Refresh market" also fetches the marketplace repo's HEAD commit sha, so every installed plugin — external git sources (entry sha) and in-repo path sources (HEAD sha) — gets an exact "update available" verdict; sha-pinned sources show an update badge. Clicking Update downloads and byte-compares first: identical content only adopts the new pin (no reinstall), changed content reinstalls |
 | **Uninstall** | disposes mounts, deletes the store directory, and clears the registry (atomic `registry.json` with `.cap-bak` history) |

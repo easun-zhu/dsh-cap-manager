@@ -16,6 +16,7 @@ import { RemoteError } from '@deepseek-ai/dsh-typert-protocol'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
 import * as McpClient from '@deepseek-ai/dsh-mcp-client'
 import { convertMcpImport } from './import-mcp.ts'
+import { viewConfig } from './config-view.ts'
 import { parseSkillText } from './skills-store.ts'
 import { collectToolCounts, fiberFacts, resolveStatus, type FiberLike } from './status-tracker.ts'
 import type { MarketEntry } from './cc-market.ts'
@@ -71,6 +72,17 @@ export interface InstallOutcome {
 interface MountedServer {
   readonly fiber: Fiber
   readonly configKey: string
+}
+
+/** One plugin-mounted server as the MCP tab's read-only rows carry it. */
+export interface CcServerRow {
+  readonly plugin: string
+  readonly serverName: string
+  /** Masked config view; undefined when the manifest config is unreadable. */
+  readonly view: McpConfigView | undefined
+  readonly status: McpStatus
+  readonly toolCount: number | undefined
+  readonly error?: string
 }
 
 /** Structural view of the skill registry (`ctx.skills`). */
@@ -158,6 +170,30 @@ export class CcPluginStore {
       view[serverName] = { status, toolCount: facts.toolCount, ...(facts.fiberError !== undefined ? { error: facts.fiberError } : {}) }
     }
     return view
+  }
+
+  /** Every enabled plugin's servers with live status, for the MCP tab's read-only rows. */
+  async listServerRows(): Promise<readonly CcServerRow[]> {
+    const rows: CcServerRow[] = []
+    for (const plugin of this.registry.plugins.filter(item => item.enabled)) {
+      const statuses = await this.serverStatuses(plugin.name)
+      const configs = new Map<string, Record<string, unknown>>()
+      for (const config of convertServers(await readManifestOf(this.options.baseDir, plugin), [])) {
+        configs.set(config.serverName, config.plain)
+      }
+      for (const serverName of plugin.serverNames) {
+        const live = statuses[serverName]
+        rows.push({
+          plugin: plugin.name,
+          serverName,
+          view: viewConfig(configs.get(serverName)),
+          status: live?.status ?? 'stopped',
+          toolCount: live?.toolCount,
+          ...(live?.error !== undefined ? { error: live.error } : {}),
+        })
+      }
+    }
+    return rows
   }
 
   /** Download, store, and activate one marketplace entry. */
