@@ -61,25 +61,36 @@ Web UI 侧边栏增加 **MCP 与技能** 面板：
 **前置**：[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ≥
 `0.2.1-rc.2`（全局安装 `dsh`，或全部通过 `npx -y @deepseek-ai/dsh` 运行）。
 
-包发布到 npm 后（或直接从 git 安装）：
+**免编译** —— 直接从 GitHub Release 的 tarball 安装：
 
 ```sh
-dsh plugin --profile web add dsh-cap-manager                 # npm
-dsh plugin --profile web add github:<owner>/dsh-cap-manager  # git 简写（pnpm 转发）
+# 浏览器 Web UI
+dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+# 桌面客户端
+dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+```
+
+`web` / `desktop` 换成你自己的 profile 名即可；重启 dsh，然后在左侧边栏打开
+**MCP 与技能**。
+
+包发布到 npm 后：
+
+```sh
+dsh plugin --profile web add dsh-cap-manager
 ```
 
 > 若 pnpm 的发布冷却期解析到旧版本，可显式固定版本：
 > `dsh plugin --profile web add dsh-cap-manager@1.1.0`。
+> （`github:` git 简写等于从源码装 —— 仓库不含编译产物 `lib/`，优先用 Release
+> tarball 或 npm。）
 
 从本地目录安装：
 
 ```sh
 pnpm install && pnpm build      # 产出 lib/index.js + lib/client.js
-dsh plugin --profile web add /absolute/path/to/dsh-pm
+dsh plugin --profile web add /absolute/path/to/dsh-cap-manager
 dsh --profile web               # 重启以加载插件
 ```
-
-然后在左侧边栏打开 **MCP 与技能**。
 
 ### 可选：通过插件市场安装
 

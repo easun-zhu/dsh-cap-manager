@@ -64,25 +64,36 @@ tool count, and an enable switch (a disabled row keeps its config but does not m
 **Prerequisite:** [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ≥
 `0.2.1-rc.2` (`dsh` installed globally, or run everything through `npx -y @deepseek-ai/dsh`).
 
-Once the package is on npm (or straight from git):
+**No build needed** — install straight from the GitHub Release tarball:
 
 ```sh
-dsh plugin --profile web add dsh-cap-manager                 # npm
-dsh plugin --profile web add github:<owner>/dsh-cap-manager  # git shorthand via pnpm
+# Web UI
+dsh plugin --profile web add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+# Desktop client
+dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/releases/download/v1.1.0/dsh-cap-manager-1.1.0.tgz
+```
+
+Replace `web` / `desktop` with your own profile name, restart dsh, then open
+**MCP & Skills** in the left sidebar.
+
+Once the package is on npm:
+
+```sh
+dsh plugin --profile web add dsh-cap-manager
 ```
 
 > If pnpm's release cooldown resolves an older release, pin the version explicitly:
 > `dsh plugin --profile web add dsh-cap-manager@1.1.0`.
+> (The `github:` git shorthand builds from source — the repository ships no compiled `lib/`;
+> prefer the Release tarball or npm.)
 
 From a local checkout:
 
 ```sh
 pnpm install && pnpm build      # produces lib/index.js + lib/client.js
-dsh plugin --profile web add /absolute/path/to/dsh-pm
+dsh plugin --profile web add /absolute/path/to/dsh-cap-manager
 dsh --profile web               # restart to load the plugin
 ```
-
-Then open **MCP & Skills** in the left sidebar.
 
 ### Optional: install through the plugin market
 
