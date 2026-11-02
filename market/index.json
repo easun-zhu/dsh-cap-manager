@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "title": {
+    "en": "dsh-cap-manager plugin index",
+    "zh": "dsh-cap-manager 插件索引"
+  },
+  "description": {
+    "en": "Installable index for dsh-cap-manager — add this URL to the dsh Discover page (or plugin-market indexes) to install with one click.",
+    "zh": "dsh-cap-manager 的可安装索引 — 在 dsh 发现页（或 plugin-market 的 indexes）添加此 URL 即可一键安装。"
+  },
+  "metadata": {
+    "categories": {
+      "manager": { "title": { "en": "Manager", "zh": "管理" } }
+    },
+    "labels": {
+      "mcp": { "title": { "en": "MCP", "zh": "MCP" } },
+      "skills": { "title": { "en": "Skills", "zh": "技能" } }
+    },
+    "sortKeys": {
+      "published": { "title": { "en": "Published", "zh": "发布时间" }, "order": "desc" }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-cap-manager",
+      "title": {
+        "en": "MCP & Skills Manager",
+        "zh": "MCP 与技能管理"
+      },
+      "description": {
+        "en": "One panel for MCP servers and skills across global / profile / project scopes: view, add, edit, toggle, and delete with live effect; import from Claude / Cursor / Cline / Roo / VS Code; export, backups, trash, and a curated catalog.",
+        "zh": "一个面板统一管理全局 / Profile / 项目三个作用域的 MCP 服务与技能：查看、新增、编辑、开关、删除均实时生效；支持从 Claude / Cursor / Cline / Roo / VS Code 导入；另有导出、备份、回收站与精选目录。"
+      },
+      "homepage": "https://github.com/easun-zhu/dsh-cap-manager#readme",
+      "repository": { "url": "https://github.com/easun-zhu/dsh-cap-manager" },
+      "metadata": {
+        "category": "manager",
+        "keywords": ["dsh", "deepseek-harness", "mcp", "skills", "plugin", "manager"],
+        "labels": ["mcp", "skills"],
+        "sortKeys": { "published": 1793241600 }
+      },
+      "versions": [
+        {
+          "version": "1.1.0",
+          "publishTimestamp": 1793241600,
+          "source": { "type": "npm" },
+          "engines": { "dsh": ">=0.2.1-rc.2" }
+        },
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1793232000,
+          "source": { "type": "npm" },
+          "engines": { "dsh": ">=0.2.1-rc.2" }
+        }
+      ]
+    }
+  ]
+}

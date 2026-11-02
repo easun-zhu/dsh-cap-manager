@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh-cap-manager 面板重设计预览</title>
+<style>
+/* ===== 近似宿主令牌（仅预览用；正式环境由 dsh 宿主注入） ===== */
+:root {
+  --dsw-radius-xs: 4px; --dsw-radius-sm: 6px; --dsw-radius-md: 8px; --dsw-radius-lg: 12px; --dsw-radius-panel: 16px;
+  --dsw-alias-bg-base: #EDF0F4;
+  --dsw-alias-bg-layer-1: #FFFFFF;
+  --dsw-alias-bg-layer-2: #FFFFFF;
+  --dsw-alias-bg-layer-3: #F4F6F9;
+  --dsw-alias-bg-layer-4: #FAFBFC;
+  --dsw-alias-bg-module-platform: #E7EAF0;
+  --dsw-alias-border-l1: #E4E7EC; --dsw-alias-border-l2: #DBDFE6; --dsw-alias-border-l3: #CDD2DC; --dsw-alias-border-l4: #C2C8D3;
+  --dsw-alias-brand-primary: #4D6BFE;
+  --dsw-alias-button-primary-fill: #4D6BFE; --dsw-alias-button-primary-hover: #3D5BF5;
+  --dsw-alias-button-ghost-active-fill: rgba(19,33,71,.08); --dsw-alias-button-ghost-active-border: transparent;
+  --dsw-alias-button-tool-bar-fill: transparent; --dsw-alias-button-tool-bar-hover: rgba(19,33,71,.06);
+  --dsw-alias-interactive-bg-hover: rgba(19,33,71,.055); --dsw-alias-interactive-bg-active: rgba(19,33,71,.1);
+  --dsw-alias-interactive-bg-hover-danger: rgba(229,83,75,.08);
+  --dsw-alias-label-primary: #1C2433; --dsw-alias-label-secondary: #49536A; --dsw-alias-label-tertiary: #8A93A6;
+  --dsw-alias-label-caption: #9AA3B5; --dsw-alias-label-primary-foreground: #FFFFFF;
+  --dsw-alias-state-success-primary: #21883D; --dsw-alias-state-warn-primary: #9A6700; --dsw-alias-state-warn-label: #9A6700;
+  --dsw-alias-state-error-primary: #CF3B33; --dsw-alias-state-business-primary: #4D6BFE; --dsw-alias-state-idle-primary: #8A93A6;
+  --dsw-alias-switch-thumb: #FFFFFF;
+  --dsw-alias-markdown-code-block: #F4F6F9;
+}
+:root[data-theme='dark'] {
+  --dsw-alias-bg-base: #0E1118;
+  --dsw-alias-bg-layer-1: #151924;
+  --dsw-alias-bg-layer-2: #1A1F2C;
+  --dsw-alias-bg-layer-3: #232939;
+  --dsw-alias-bg-layer-4: #2A3145;
+  --dsw-alias-bg-module-platform: #0B0E15;
+  --dsw-alias-border-l1: #242B3C; --dsw-alias-border-l2: #2C3448; --dsw-alias-border-l3: #3A4460; --dsw-alias-border-l4: #47526F;
+  --dsw-alias-brand-primary: #6C87FF;
+  --dsw-alias-button-primary-fill: #4D6BFE; --dsw-alias-button-primary-hover: #6581FF;
+  --dsw-alias-button-ghost-active-fill: rgba(140,160,220,.14); --dsw-alias-button-ghost-active-border: transparent;
+  --dsw-alias-button-tool-bar-fill: transparent; --dsw-alias-button-tool-bar-hover: rgba(140,160,220,.08);
+  --dsw-alias-interactive-bg-hover: rgba(140,160,220,.08); --dsw-alias-interactive-bg-active: rgba(140,160,220,.14);
+  --dsw-alias-interactive-bg-hover-danger: rgba(248,81,73,.1);
+  --dsw-alias-label-primary: #E8EBF3; --dsw-alias-label-secondary: #A9B1C4; --dsw-alias-label-tertiary: #7C869C;
+  --dsw-alias-label-caption: #6E7890; --dsw-alias-label-primary-foreground: #FFFFFF;
+  --dsw-alias-state-success-primary: #3FB950; --dsw-alias-state-warn-primary: #D29922; --dsw-alias-state-warn-label: #E3B341;
+  --dsw-alias-state-error-primary: #F85149; --dsw-alias-state-business-primary: #6C87FF; --dsw-alias-state-idle-primary: #7C869C;
+  --dsw-alias-switch-thumb: #C9CEDC;
+  --dsw-alias-markdown-code-block: #232939;
+}
+/* ===== 宿主原语近似（Tag / Switch，仅预览） ===== */
+.tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 1px 8px; font-size: 11px; line-height: 17px; font-weight: 500; white-space: nowrap; }
+.tag[data-tone='outline'] { border: .5px solid var(--dsw-alias-border-l4); color: var(--dsw-alias-label-tertiary); }
+.tag[data-tone='quiet'] { color: var(--dsw-alias-label-tertiary); }
+.tag[data-tone='success'] { background: color-mix(in srgb, var(--dsw-alias-state-success-primary) 10%, transparent); color: var(--dsw-alias-state-success-primary); }
+.tag[data-tone='info'] { background: color-mix(in srgb, var(--dsw-alias-state-business-primary) 10%, transparent); color: var(--dsw-alias-state-business-primary); }
+.tag[data-tone='warning'] { background: color-mix(in srgb, var(--dsw-alias-state-warn-primary) 12%, transparent); color: var(--dsw-alias-state-warn-primary); }
+.tag[data-tone='danger'] { background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 10%, transparent); color: var(--dsw-alias-state-error-primary); }
+.tag[data-tone='neutral'] { background: var(--dsw-alias-bg-module-platform); color: var(--dsw-alias-label-secondary); }
+.switch { position: relative; flex: 0 0 auto; width: 36px; height: 20px; padding: 2px; border: 0; border-radius: 999px; background: var(--dsw-alias-border-l3); cursor: pointer; }
+.switch[aria-checked='true'] { background: var(--dsw-alias-brand-primary); }
+.switch .thumb { display: block; width: 16px; height: 16px; border-radius: 50%; background: var(--dsw-alias-label-primary-foreground); transition: transform 120ms ease; }
+.switch[aria-checked='true'] .thumb { transform: translateX(16px); background: #fff; }
+
+/* =====================================================================
+   以下为交付样式（将移植进 src/client/styles.ts）
+   ===================================================================== */
+.cap-page { display: flex; flex-direction: column; height: 100%; min-height: 0; color: var(--dsw-alias-label-primary); font-size: 13.5px; }
+
+/* —— 工具栏 —— */
+.cap-toolbar { display: flex; align-items: center; gap: 8px; padding: 12px 16px 10px; flex-wrap: wrap; }
+.cap-tabs { display: inline-flex; gap: 2px; padding: 3px; border-radius: var(--dsw-radius-lg); background: var(--dsw-alias-bg-module-platform); }
+.cap-tab { border: 0; background: transparent; color: inherit; font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 9px; cursor: pointer; color: var(--dsw-alias-label-secondary); transition: color .15s ease, background .15s ease; }
+.cap-tab:hover { color: var(--dsw-alias-label-primary); }
+@media (prefers-reduced-motion: reduce) { .cap-tab, .cap-card, .cap-cc-card { transition: none; } }
+.cap-tab[aria-selected='true'] { background: var(--dsw-alias-bg-layer-2); box-shadow: 0 1px 2px rgba(9,14,30,.1), inset 0 0 0 .5px var(--dsw-alias-border-l2); color: var(--dsw-alias-label-primary); font-weight: 600; }
+.cap-search { flex: 1 1 160px; max-width: 260px; }
+.cap-search input { width: 100%; box-sizing: border-box; height: 30px; padding: 0 12px; border-radius: var(--dsw-radius-md); border: 1px solid var(--dsw-alias-border-l3); background: var(--dsw-alias-bg-layer-2); color: inherit; font: inherit; }
+.cap-search input::placeholder { color: var(--dsw-alias-label-tertiary); }
+.cap-search input:focus-visible { outline: none; border-color: var(--dsw-alias-state-business-primary); }
+.cap-project-select select { height: 30px; padding: 0 8px; border-radius: var(--dsw-radius-md); border: 1px solid var(--dsw-alias-border-l3); background: var(--dsw-alias-bg-layer-2); color: inherit; font: inherit; max-width: 220px; cursor: pointer; }
+.cap-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cap-spacer { flex: 1; }
+
+/* —— 按钮 —— */
+.cap-button { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; border: 1px solid transparent; border-radius: var(--dsw-radius-md); background: transparent; color: var(--dsw-alias-label-primary); font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.cap-button:hover { background: var(--dsw-alias-interactive-bg-hover); }
+.cap-button:active { background: var(--dsw-alias-interactive-bg-active); }
+.cap-button:disabled { cursor: not-allowed; opacity: .45; }
+.cap-button:focus-visible { outline: 2px solid var(--dsw-alias-state-business-primary); outline-offset: 1px; }
+.cap-primary { background: var(--dsw-alias-button-primary-fill); color: var(--dsw-alias-label-primary-foreground); font-weight: 500; }
+.cap-primary:hover { background: var(--dsw-alias-button-primary-hover); }
+.cap-danger { color: var(--dsw-alias-state-error-primary); }
+.cap-danger:hover { background: var(--dsw-alias-interactive-bg-hover-danger); }
+
+/* —— 通知条 —— */
+.cap-notice { display: flex; align-items: baseline; gap: 8px; margin: 0 16px 10px; padding: 7px 12px; border-radius: var(--dsw-radius-md); font-size: 12.5px; background: color-mix(in srgb, var(--dsw-alias-state-business-primary) 8%, transparent); color: var(--dsw-alias-label-primary); }
+.cap-notice::before { content: ''; flex: none; width: 6px; height: 6px; border-radius: 50%; align-self: center; background: var(--dsw-alias-state-business-primary); }
+.cap-notice-error { background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 8%, transparent); }
+.cap-notice-error::before { background: var(--dsw-alias-state-error-primary); }
+
+/* —— 主体与分组 —— */
+.cap-body { flex: 1; overflow-y: auto; padding: 0 16px 20px; }
+.cap-group { margin: 0 0 18px; }
+.cap-group-head { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--dsw-alias-label-secondary); padding: 10px 2px 8px; margin: 0; }
+.cap-group-count { display: inline-flex; align-items: center; min-width: 18px; height: 17px; padding: 0 6px; border-radius: 999px; background: var(--dsw-alias-bg-module-platform); color: var(--dsw-alias-label-tertiary); font-size: 11px; font-weight: 500; }
+
+/* —— 能力卡片（列表） —— */
+.cap-cards { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.cap-card { --cap-status-color: var(--dsw-alias-state-idle-primary); position: relative; border: 1px solid var(--dsw-alias-border-l2); border-radius: var(--dsw-radius-lg); padding: 12px 16px 10px 18px; background: var(--dsw-alias-bg-layer-2); overflow: hidden; }
+.cap-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--cap-status-color); opacity: .9; }
+.cap-card:hover { border-color: var(--dsw-alias-border-l3); box-shadow: 0 2px 10px rgba(9,14,30,.08); }
+.cap-card[data-cap-status='connected'] { --cap-status-color: var(--dsw-alias-state-success-primary); }
+.cap-card[data-cap-status='connecting'] { --cap-status-color: var(--dsw-alias-state-warn-primary); }
+.cap-card[data-cap-status='failed'] { --cap-status-color: var(--dsw-alias-state-error-primary); }
+.cap-card[data-cap-status='stopped'], .cap-card[data-cap-status='disabled'] { --cap-status-color: var(--dsw-alias-border-l4); }
+.cap-card[data-cap-status='stopped'] .cap-cardTitle, .cap-card[data-cap-status='disabled'] .cap-cardTitle { color: var(--dsw-alias-label-secondary); font-weight: 500; }
+.cap-card { transition: border-color .15s ease, box-shadow .15s ease; }
+.cap-cc-card { transition: border-color .15s ease, box-shadow .15s ease; }
+.cap-cardHead { display: flex; align-items: flex-start; gap: 12px; }
+.cap-cardIcon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--cap-status-color) 12%, transparent); color: var(--cap-status-color); flex: none; margin-top: 1px; }
+.cap-cardIcon svg { display: block; }
+.cap-cardMain { flex: 1; min-width: 0; }
+.cap-titleRow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cap-cardTitle { font-weight: 600; font-size: 14px; }
+.cap-cardOpen { background: none; border: 0; padding: 0; cursor: pointer; color: inherit; font: inherit; }
+.cap-cardOpen:hover { color: var(--dsw-alias-brand-primary); }
+.cap-cardDesc { display: block; margin-top: 4px; font-size: 12.5px; color: var(--dsw-alias-label-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 64ch; font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+.cap-cardFoot { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--dsw-alias-border-l1); }
+.cap-cardFootNote { font-size: 12px; color: var(--dsw-alias-label-caption); }
+.cap-cardEnd { flex: none; display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.cap-cardEnd .cap-button { height: 26px; padding: 0 10px; font-size: 12.5px; }
+.cap-error-text { font-size: 12px; color: var(--dsw-alias-state-error-primary); background: color-mix(in srgb, var(--dsw-alias-state-error-primary) 7%, transparent); border-radius: var(--dsw-radius-sm); padding: 6px 10px; margin: 8px 0 0; overflow-wrap: anywhere; }
+.cap-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; display: inline-block; }
+.cap-empty { padding: 36px 16px; text-align: center; color: var(--dsw-alias-label-tertiary); font-size: 13px; border: 1px dashed var(--dsw-alias-border-l3); border-radius: var(--dsw-radius-lg); }
+.cap-message { margin: 28px 8px; text-align: center; font-size: 13px; color: var(--dsw-alias-label-tertiary); }
+
+/* —— CC 市场网格卡 —— */
+.cap-cc-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.cap-cc-card { --cap-status-color: var(--dsw-alias-border-l4); position: relative; border: 1px solid var(--dsw-alias-border-l2); border-radius: var(--dsw-radius-lg); padding: 12px 14px; background: var(--dsw-alias-bg-layer-2); display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cap-cc-card:hover { border-color: var(--dsw-alias-border-l3); box-shadow: 0 2px 10px rgba(9,14,30,.08); }
+.cap-cc-card[data-cap-status='failed'] { --cap-status-color: var(--dsw-alias-state-error-primary); }
+.cap-cc-head { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; min-width: 0; }
+.cap-cc-name { font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.cap-cc-desc { font-size: 12px; color: var(--dsw-alias-label-secondary); line-height: 1.5; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: 3em; }
+.cap-cc-meta { font-size: 11px; color: var(--dsw-alias-label-caption); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.cap-cc-foot { margin-top: auto; display: flex; align-items: center; gap: 6px; min-width: 0; padding-top: 8px; border-top: 1px solid var(--dsw-alias-border-l1); }
+.cap-cc-more { display: flex; justify-content: center; padding: 10px 0 2px; }
+.cap-cc-server { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--dsw-alias-label-secondary); min-width: 0; }
+.cap-cc-serverText { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cap-cc-server .cap-dot[data-state='connected'] { color: var(--dsw-alias-state-success-primary); }
+.cap-cc-server .cap-dot[data-state='failed'] { color: var(--dsw-alias-state-error-primary); }
+.cap-cc-server .cap-dot[data-state='stopped'] { color: var(--dsw-alias-state-idle-primary); }
+.cap-section-title { font-size: 13px; font-weight: 600; color: var(--dsw-alias-label-secondary); padding: 14px 2px 8px; margin: 0; }
+.cap-section-head { display: flex; align-items: center; gap: 8px; }
+.cap-section-head .cap-section-title { flex: 1; }
+
+/* —— 编辑器 / 表单卡 —— */
+.cap-editor { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.cap-editor-top { display: flex; align-items: center; gap: 8px; padding: 10px 16px 0; }
+.cap-crumb { background: none; border: 0; color: var(--dsw-alias-label-secondary); font: inherit; cursor: pointer; padding: 4px 0; }
+.cap-crumb:hover { color: var(--dsw-alias-label-primary); }
+.cap-editor-title { font-size: 15px; font-weight: 600; margin: 10px 16px 6px; }
+.cap-form { flex: 1; overflow-y: auto; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 14px; }
+.cap-fieldset { border: 1px solid var(--dsw-alias-border-l2); border-radius: var(--dsw-radius-lg); background: var(--dsw-alias-bg-layer-2); padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.cap-field { display: flex; align-items: flex-start; gap: 12px; }
+.cap-fieldLabel { flex: 0 0 168px; font-size: 13px; color: var(--dsw-alias-label-secondary); padding-top: 6px; text-align: right; }
+.cap-fieldControl { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.cap-fieldControl input[type='text'], .cap-fieldControl input[type='url'], .cap-fieldControl input[type='password'],
+.cap-fieldControl input:not([type]), .cap-fieldControl textarea {
+  width: 100%; box-sizing: border-box; padding: 6px 12px; border-radius: var(--dsw-radius-md);
+  border: 1px solid var(--dsw-alias-border-l3); background: var(--dsw-alias-bg-layer-2); color: inherit; font: inherit;
+}
+.cap-fieldControl input:focus-visible, .cap-fieldControl textarea:focus-visible { outline: none; border-color: var(--dsw-alias-state-business-primary); }
+.cap-fieldControl textarea { font-family: ui-monospace, Consolas, monospace; font-size: 12px; resize: vertical; }
+.cap-radios { flex-direction: row; flex-wrap: wrap; gap: 14px; padding-top: 5px; }
+.cap-radios label, .cap-check { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.cap-check { flex-direction: row; padding-top: 6px; margin-left: 180px; }
+.cap-kv { display: flex; flex-direction: column; gap: 5px; }
+.cap-kv-row { display: flex; gap: 5px; }
+.cap-kv-key { flex: 0 0 200px; }
+.cap-kv-value { flex: 1; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+.cap-kv-row input { padding: 5px 10px; border-radius: var(--dsw-radius-sm); border: 1px solid var(--dsw-alias-border-l3); background: var(--dsw-alias-bg-layer-2); color: inherit; font: inherit; }
+.cap-kv-remove { border: 0; background: transparent; color: var(--dsw-alias-label-tertiary); cursor: pointer; font-size: 15px; }
+.cap-kv-remove:hover { color: var(--dsw-alias-state-error-primary); }
+.cap-kv-add { align-self: flex-start; font-size: 12px; padding: 3px 10px; }
+.cap-advanced { border: 1px dashed var(--dsw-alias-border-l3); border-radius: var(--dsw-radius-md); padding: 10px 14px; }
+.cap-advanced summary { cursor: pointer; font-size: 12.5px; color: var(--dsw-alias-label-secondary); }
+.cap-advanced .cap-field { margin-top: 10px; }
+.cap-hint { font-size: 12px; color: var(--dsw-alias-label-tertiary); margin: 4px 16px; }
+.cap-editor-actions { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--dsw-alias-border-l1); }
+.cap-test-result { padding: 8px 16px 16px; font-size: 13px; }
+.cap-result-ok { color: var(--dsw-alias-state-success-primary); font-size: 12.5px; }
+.cap-result-bad { color: var(--dsw-alias-state-error-primary); font-size: 12.5px; overflow-wrap: anywhere; }
+.cap-switch-pair { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.cap-switch-note { font-size: 11px; color: var(--dsw-alias-label-tertiary); }
+.cap-skill-body { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.5; }
+.cap-fieldControl select { padding: 6px 10px; border-radius: var(--dsw-radius-md); border: 1px solid var(--dsw-alias-border-l3); background: var(--dsw-alias-bg-layer-2); color: inherit; font: inherit; width: max-content; max-width: 100%; }
+
+/* —— 行卡（预览清单 / 回收站 / 备份） —— */
+.cap-list-rows { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; }
+.cap-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; border: 1px solid var(--dsw-alias-border-l2); border-radius: var(--dsw-radius-md); background: var(--dsw-alias-bg-layer-2); }
+.cap-row:hover { border-color: var(--dsw-alias-border-l3); }
+.cap-row-check { margin-top: 3px; flex: none; accent-color: var(--dsw-alias-brand-primary); }
+.cap-row-main { flex: 1; min-width: 0; }
+.cap-row-title { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 600; font-size: 13px; }
+.cap-row-sub { display: block; margin-top: 3px; font-size: 12px; color: var(--dsw-alias-label-tertiary); overflow-wrap: anywhere; font-family: ui-monospace, Consolas, monospace; }
+.cap-row-meta { font-weight: 400; font-size: 11.5px; color: var(--dsw-alias-label-caption); }
+.cap-row-end { flex: none; display: flex; gap: 6px; }
+.cap-warn { display: block; margin-top: 3px; font-size: 11.5px; color: var(--dsw-alias-state-warn-primary); overflow-wrap: anywhere; }
+.cap-error-row { display: block; margin-top: 3px; font-size: 11.5px; color: var(--dsw-alias-state-error-primary); overflow-wrap: anywhere; }
+.cap-pre { font-family: ui-monospace, Consolas, monospace; font-size: 11px; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--dsw-alias-markdown-code-block); border-radius: var(--dsw-radius-sm); padding: 8px; margin: 6px 0 0; }
+.cap-file-row { flex-direction: row; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cap-file-row input[type='file'] { font-size: 12px; }
+.cap-file-row input[type='url'] { flex: 1 1 220px; width: auto; }
+</style>
+</head>
+<body style="margin:0; background:var(--dsw-alias-bg-base);">
+<div style="max-width:1080px; margin:0 auto; padding:24px 20px 60px; background:var(--dsw-alias-bg-base);">
+
+  <!-- ===== MCP 列表视图 ===== -->
+  <div class="cap-page" style="height:auto;">
+    <div class="cap-toolbar">
+      <div class="cap-tabs" role="tablist">
+        <button type="button" role="tab" class="cap-tab" aria-selected="true">MCP 服务</button>
+        <button type="button" role="tab" class="cap-tab" aria-selected="false">技能</button>
+        <button type="button" role="tab" class="cap-tab" aria-selected="false">插件市场</button>
+      </div>
+      <label class="cap-project-select">
+        <span class="cap-sr-only">选择项目</span>
+        <select><option>全局 / Profile</option><option>● zcode (2)</option></select>
+      </label>
+      <span class="cap-spacer"></span>
+      <div class="cap-search"><input type="search" placeholder="搜索…"></div>
+      <button type="button" class="cap-button cap-primary">+ 新增 MCP 服务</button>
+      <button type="button" class="cap-button">⇩ 导入</button>
+      <button type="button" class="cap-button">⇧ 导出</button>
+      <button type="button" class="cap-button">♻ 回收站</button>
+      <button type="button" class="cap-button">刷新</button>
+    </div>
+
+    <div class="cap-notice" role="status">已保存 · 当前环境无 HMR，重启后生效</div>
+    <div class="cap-notice cap-notice-error" role="alert">项目 mcp.yml 无法解析：expected key at line 3</div>
+
+    <div class="cap-body" style="overflow:visible;">
+      <section class="cap-group">
+        <h3 class="cap-group-head">项目 · zcode <span class="cap-group-count">2</span></h3>
+        <ul class="cap-cards">
+
+          <li class="cap-card" data-cap-status="connected">
+            <div class="cap-cardHead">
+              <span class="cap-cardIcon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M2.8 8a5.2 5.2 0 0 1 10.4 0M4.9 8a3.1 3.1 0 0 1 6.2 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </span>
+              <div class="cap-cardMain">
+                <div class="cap-titleRow">
+                  <button type="button" class="cap-cardTitle cap-cardOpen">context7</button>
+                  <span class="tag" data-tone="quiet">项目</span>
+                  <span class="tag" data-tone="quiet">streamable-http</span>
+                  <span class="tag" data-tone="success"><span class="cap-dot" style="background:currentColor"></span>已连接 · 12 个工具</span>
+                </div>
+                <span class="cap-cardDesc">https://mcp.context7.com/mcp?ctx=remote</span>
+              </div>
+            </div>
+            <div class="cap-cardFoot">
+              <button class="switch" aria-checked="true"><span class="thumb"></span></button>
+              <span class="cap-cardFootNote">HMR 热生效</span>
+              <div class="cap-cardEnd">
+                <button type="button" class="cap-button">编辑</button>
+                <button type="button" class="cap-button cap-danger">删除</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="cap-card" data-cap-status="failed">
+            <div class="cap-cardHead">
+              <span class="cap-cardIcon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.6" stroke="currentColor" stroke-width="1.2"/><path d="M5 6.5h6M5 9.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </span>
+              <div class="cap-cardMain">
+                <div class="cap-titleRow">
+                  <button type="button" class="cap-cardTitle cap-cardOpen">github</button>
+                  <span class="tag" data-tone="quiet">项目</span>
+                  <span class="tag" data-tone="quiet">stdio</span>
+                  <span class="tag" data-tone="danger"><span class="cap-dot" style="background:currentColor"></span>失败</span>
+                </div>
+                <span class="cap-cardDesc">npx -y @modelcontextprotocol/server-github</span>
+              </div>
+            </div>
+            <p class="cap-error-text" role="status">spawn npx ENOENT — 请确认命令存在于 PATH</p>
+            <div class="cap-cardFoot">
+              <button class="switch" aria-checked="true"><span class="thumb"></span></button>
+              <div class="cap-cardEnd">
+                <button type="button" class="cap-button">编辑</button>
+                <button type="button" class="cap-button cap-danger">删除</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="cap-group">
+        <h3 class="cap-group-head">全局 <span class="cap-group-count">2</span></h3>
+        <ul class="cap-cards">
+
+          <li class="cap-card" data-cap-status="connecting">
+            <div class="cap-cardHead">
+              <span class="cap-cardIcon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="1.6" fill="currentColor"/><path d="M2.8 8a5.2 5.2 0 0 1 10.4 0M4.9 8a3.1 3.1 0 0 1 6.2 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </span>
+              <div class="cap-cardMain">
+                <div class="cap-titleRow">
+                  <button type="button" class="cap-cardTitle cap-cardOpen">playwright</button>
+                  <span class="tag" data-tone="quiet">全局</span>
+                  <span class="tag" data-tone="quiet">stdio</span>
+                  <span class="tag" data-tone="warning"><span class="cap-dot" style="background:currentColor"></span>连接中</span>
+                </div>
+                <span class="cap-cardDesc">npx -y @playwright/mcp@latest</span>
+              </div>
+            </div>
+            <div class="cap-cardFoot">
+              <button class="switch" aria-checked="true"><span class="thumb"></span></button>
+              <div class="cap-cardEnd">
+                <button type="button" class="cap-button">编辑</button>
+                <button type="button" class="cap-button cap-danger">删除</button>
+              </div>
+            </div>
+          </li>
+
+          <li class="cap-card" data-cap-status="stopped">
+            <div class="cap-cardHead">
+              <span class="cap-cardIcon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.6" stroke="currentColor" stroke-width="1.2"/><path d="M5 6.5h6M5 9.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </span>
+              <div class="cap-cardMain">
+                <div class="cap-titleRow">
+                  <button type="button" class="cap-cardTitle cap-cardOpen">postgres</button>
+                  <span class="tag" data-tone="quiet">全局</span>
+                  <span class="tag" data-tone="quiet">stdio</span>
+                  <span class="tag" data-tone="neutral"><span class="cap-dot" style="background:currentColor"></span>已停用</span>
+                </div>
+                <span class="cap-cardDesc">npx -y @modelcontextprotocol/server-postgres</span>
+              </div>
+            </div>
+            <div class="cap-cardFoot">
+              <button class="switch" aria-checked="false"><span class="thumb"></span></button>
+              <div class="cap-cardEnd">
+                <button type="button" class="cap-button">编辑</button>
+                <button type="button" class="cap-button cap-danger">删除</button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="cap-group">
+        <h3 class="cap-group-head">插件提供 · 只读 <span class="cap-group-count">1</span></h3>
+        <ul class="cap-cards">
+          <li class="cap-card" data-cap-status="connected">
+            <div class="cap-cardHead">
+              <span class="cap-cardIcon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="1.6" stroke="currentColor" stroke-width="1.2"/><path d="M5 6.5h6M5 9.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </span>
+              <div class="cap-cardMain">
+                <div class="cap-titleRow">
+                  <span class="cap-cardTitle">filesystem</span>
+                  <span class="tag" data-tone="quiet">插件</span>
+                  <span class="tag" data-tone="success"><span class="cap-dot" style="background:currentColor"></span>已连接 · 8 个工具</span>
+                </div>
+                <span class="cap-cardDesc">随插件行启停</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <div class="cap-empty">还没有 MCP 服务。点击「新增」添加，或从 Claude/Cursor 导入。</div>
+    </div>
+  </div>
+
+  <hr style="border:0; border-top:1px solid var(--dsw-alias-border-l2); margin:36px 0;">
+
+  <!-- ===== CC 市场视图 ===== -->
+  <div class="cap-page" style="height:auto;">
+    <div class="cap-toolbar">
+      <div class="cap-tabs" role="tablist">
+        <button class="cap-tab">MCP 服务</button>
+        <button class="cap-tab">技能</button>
+        <button class="cap-tab" aria-selected="true">插件市场</button>
+      </div>
+      <span class="cap-spacer"></span>
+      <div class="cap-search"><input type="search" placeholder="搜索…"></div>
+      <button class="cap-button">⟳ 刷新市场</button>
+    </div>
+    <div class="cap-body" style="overflow:visible;">
+      <h3 class="cap-section-title">已安装 (2)</h3>
+      <ul class="cap-cc-grid">
+        <li class="cap-cc-card">
+          <div class="cap-cc-head">
+            <span class="cap-cc-name">frontend-design</span>
+            <span class="tag" data-tone="quiet">v0.0.0</span>
+            <span class="tag" data-tone="quiet">3 skills</span>
+          </div>
+          <span class="cap-cc-desc">Guidance for distinctive, intentional visual design when building new UI.</span>
+          <span class="cap-cc-server"><span class="cap-dot" data-state="connected"></span><span class="cap-cc-serverText">webresearch · 已连接 · 6 个工具</span></span>
+          <div class="cap-cc-foot">
+            <button class="switch" aria-checked="true"><span class="thumb"></span></button>
+            <span class="cap-spacer"></span>
+            <button type="button" class="cap-button">更新</button>
+            <button type="button" class="cap-button cap-danger">卸载</button>
+          </div>
+        </li>
+        <li class="cap-cc-card" data-cap-status="failed">
+          <div class="cap-cc-head">
+            <span class="cap-cc-name">chrome-devtools-mcp</span>
+            <span class="tag" data-tone="quiet">v1.11.0</span>
+            <span class="tag" data-tone="warning">有更新</span>
+          </div>
+          <span class="cap-cc-desc">Automate Chrome DevTools operations via MCP for debugging and testing.</span>
+          <span class="cap-cc-server"><span class="cap-dot" data-state="failed"></span><span class="cap-cc-serverText">devtools · 失败 — spawn chrome ENOENT</span></span>
+          <div class="cap-cc-foot">
+            <button class="switch" aria-checked="true"><span class="thumb"></span></button>
+            <span class="cap-spacer"></span>
+            <button type="button" class="cap-button">更新</button>
+            <button type="button" class="cap-button cap-danger">卸载</button>
+          </div>
+        </li>
+      </ul>
+
+      <h3 class="cap-section-title">市场 (142)</h3>
+      <ul class="cap-cc-grid">
+        <li class="cap-cc-card">
+          <div class="cap-cc-head"><span class="cap-cc-name">ui-ux-pro-max</span><span class="tag" data-tone="quiet">design</span></div>
+          <span class="cap-cc-desc">UI/UX design intelligence for web, mobile, and desktop interfaces.</span>
+          <div class="cap-cc-foot">
+            <span class="cap-cc-meta">nextlevelboy</span>
+            <span class="cap-spacer"></span>
+            <button type="button" class="cap-button cap-primary">⇩ 安装</button>
+          </div>
+        </li>
+        <li class="cap-cc-card">
+          <div class="cap-cc-head"><span class="cap-cc-name">morph-ppt</span><span class="tag" data-tone="quiet">slides</span></div>
+          <span class="cap-cc-desc">PowerPoint Morph transitions, Keynote-style continuous motion.</span>
+          <div class="cap-cc-foot">
+            <span class="cap-cc-meta">easun</span>
+            <span class="cap-spacer"></span>
+            <button type="button" class="cap-button cap-primary">⇩ 安装</button>
+          </div>
+        </li>
+        <li class="cap-cc-card">
+          <div class="cap-cc-head"><span class="cap-cc-name">officecli</span><span class="tag" data-tone="quiet">office</span></div>
+          <span class="cap-cc-desc">Create, analyze, proofread, and modify Office documents.</span>
+          <div class="cap-cc-foot">
+            <span class="cap-cc-meta">officecli-team</span>
+            <span class="cap-spacer"></span>
+            <button type="button" class="cap-button cap-primary">⇩ 安装</button>
+          </div>
+        </li>
+        <li class="cap-cc-card">
+          <div class="cap-cc-head"><span class="cap-cc-name">officecli-data-dashboard</span><span class="tag" data-tone="quiet">excel</span></div>
+          <span class="cap-cc-desc">Multi-element Excel dashboard with KPI cards, charts and sparklines.</span>
+          <div class="cap-cc-foot">
+            <span class="cap-cc-meta">officecli-team</span>
+            <span class="cap-spacer"></span>
+            <button type="button" class="cap-button cap-primary">⇩ 安装</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <hr style="border:0; border-top:1px solid var(--dsw-alias-border-l2); margin:36px 0;">
+
+  <!-- ===== 编辑器表单 ===== -->
+  <div class="cap-editor" style="height:auto;">
+    <div class="cap-editor-top">
+      <button type="button" class="cap-crumb">‹ MCP 服务</button>
+    </div>
+    <h2 class="cap-editor-title">编辑 context7</h2>
+    <div class="cap-form">
+     <div class="cap-fieldset">
+      <label class="cap-field">
+        <span class="cap-fieldLabel">作用域</span>
+        <span class="cap-fieldControl cap-radios">
+          <label><input type="radio" name="s"> 全局</label>
+          <label><input type="radio" name="s" checked> Profile · web</label>
+          <label><input type="radio" name="s"> 项目 · zcode</label>
+        </span>
+      </label>
+      <label class="cap-field">
+        <span class="cap-fieldLabel">名称</span>
+        <span class="cap-fieldControl"><input type="text" value="context7"></span>
+      </label>
+      <div class="cap-field">
+        <span class="cap-fieldLabel">传输</span>
+        <span class="cap-fieldControl cap-radios">
+          <label><input type="radio"> stdio</label>
+          <label><input type="radio" checked> Streamable HTTP</label>
+        </span>
+      </div>
+      <label class="cap-field">
+        <span class="cap-fieldLabel">URL</span>
+        <span class="cap-fieldControl"><input type="url" value="https://mcp.context7.com/mcp?ctx=remote"></span>
+      </label>
+      <details class="cap-advanced">
+        <summary>高级</summary>
+        <label class="cap-field"><span class="cap-fieldLabel">工具调用超时（毫秒）</span><span class="cap-fieldControl"><input value="60000"></span></label>
+        <label class="cap-field cap-check"><input type="checkbox"> <span>启动失败即报错</span></label>
+      </details>
+      <div class="cap-field cap-check">
+        <input id="en" type="checkbox" checked> <label for="en">启用此服务</label>
+      </div>
+     </div>
+    </div>
+    <div class="cap-editor-actions">
+      <button type="button" class="cap-button">测试连接</button>
+      <span class="cap-spacer"></span>
+      <button type="button" class="cap-button">取消</button>
+      <button type="button" class="cap-button cap-danger">删除</button>
+      <button type="button" class="cap-button cap-primary">保存并生效</button>
+    </div>
+  </div>
+
+  <hr style="border:0; border-top:1px solid var(--dsw-alias-border-l2); margin:36px 0;">
+
+  <!-- ===== 回收站行卡 ===== -->
+  <div>
+    <h3 class="cap-section-title" style="padding-top:0;">回收站</h3>
+    <ul class="cap-list-rows">
+      <li class="cap-row">
+        <div class="cap-row-main">
+          <span class="cap-row-title">morph-ppt-3d <span class="cap-row-meta"> · skill</span></span>
+          <span class="cap-row-sub">C:\Users\easun\.agents\skills\morph-ppt-3d · 2026/10/28 14:32</span>
+        </div>
+        <div class="cap-row-end">
+          <button type="button" class="cap-button">还原</button>
+          <button type="button" class="cap-button cap-danger">彻底删除</button>
+        </div>
+      </li>
+      <li class="cap-row">
+        <div class="cap-row-main">
+          <span class="cap-row-title">mcp.yml <span class="cap-row-meta"> · backup</span></span>
+          <span class="cap-row-sub">2026/10/27 09:15 · 3 KB</span>
+        </div>
+        <div class="cap-row-end">
+          <button type="button" class="cap-button">还原</button>
+          <button type="button" class="cap-button cap-danger">删除</button>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+<button onclick="const r=document.documentElement; r.dataset.theme = r.dataset.theme==='dark' ? '' : 'dark'" style="position:fixed; right:16px; bottom:16px; z-index:9; height:34px; padding:0 14px; border-radius:8px; border:1px solid var(--dsw-alias-border-l3); background:var(--dsw-alias-bg-layer-2); color:var(--dsw-alias-label-primary); cursor:pointer;">切换明暗</button>
+</body>
+</html>
