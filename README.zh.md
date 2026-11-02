@@ -5,6 +5,7 @@
 **在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI 中
 一个面板统一管理 MCP 服务、技能与 Claude Code 插件。**
 
+[![npm](https://img.shields.io/npm/v/dsh-cap-manager?logo=npm&color=cb3837)](https://www.npmjs.com/package/dsh-cap-manager)
 ![version](https://img.shields.io/badge/version-1.1.1-4D6BFE)
 ![dsh](https://img.shields.io/badge/DeepSeek%20Harness-%3E%3D%200.2.1--rc.2-4D6BFE)
 ![market](https://img.shields.io/badge/claude--plugins--official-315%2B-8A5BE8)
@@ -61,7 +62,16 @@ Web UI 侧边栏增加 **MCP 与技能** 面板：
 **前置**：[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ≥
 `0.2.1-rc.2`（全局安装 `dsh`，或全部通过 `npx -y @deepseek-ai/dsh` 运行）。
 
-**免编译** —— 直接从 GitHub Release 的 tarball 安装：
+**免编译 —— 从 npm 安装：**
+
+```sh
+dsh plugin --profile web add dsh-cap-manager
+```
+
+> 若 pnpm 的发布冷却期拒绝解析刚发的版本，可显式固定版本：
+> `dsh plugin --profile web add dsh-cap-manager@1.1.1`。
+
+或安装 Release tarball（效果相同，不依赖 npm）：
 
 ```sh
 # 浏览器 Web UI
@@ -71,18 +81,8 @@ dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/re
 ```
 
 `web` / `desktop` 换成你自己的 profile 名即可；重启 dsh，然后在左侧边栏打开
-**MCP 与技能**。
-
-包发布到 npm 后：
-
-```sh
-dsh plugin --profile web add dsh-cap-manager
-```
-
-> 若 pnpm 的发布冷却期解析到旧版本，可显式固定版本：
-> `dsh plugin --profile web add dsh-cap-manager@1.1.1`。
-> （`github:` git 简写等于从源码装 —— 仓库不含编译产物 `lib/`，优先用 Release
-> tarball 或 npm。）
+**MCP 与技能**。（`github:` git 简写等于从源码装 —— 仓库不含编译产物 `lib/`，
+优先用 npm 或 tarball。）
 
 从本地目录安装：
 

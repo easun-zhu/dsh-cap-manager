@@ -5,6 +5,7 @@
 **One panel for MCP servers, skills & Claude Code plugins in the
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI.**
 
+[![npm](https://img.shields.io/npm/v/dsh-cap-manager?logo=npm&color=cb3837)](https://www.npmjs.com/package/dsh-cap-manager)
 ![version](https://img.shields.io/badge/version-1.1.1-4D6BFE)
 ![dsh](https://img.shields.io/badge/DeepSeek%20Harness-%3E%3D%200.2.1--rc.2-4D6BFE)
 ![market](https://img.shields.io/badge/claude--plugins--official-315%2B-8A5BE8)
