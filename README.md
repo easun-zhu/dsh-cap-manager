@@ -65,7 +65,16 @@ tool count, and an enable switch (a disabled row keeps its config but does not m
 **Prerequisite:** [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) ≥
 `0.2.1-rc.2` (`dsh` installed globally, or run everything through `npx -y @deepseek-ai/dsh`).
 
-**No build needed** — install straight from the GitHub Release tarball:
+**No build needed — install from npm:**
+
+```sh
+dsh plugin --profile web add dsh-cap-manager
+```
+
+> If pnpm's release cooldown refuses the fresh release, pin the version explicitly:
+> `dsh plugin --profile web add dsh-cap-manager@1.1.1`.
+
+Or install a Release tarball (works the same, no npm involved):
 
 ```sh
 # Web UI
@@ -75,18 +84,8 @@ dsh plugin --profile desktop add https://github.com/easun-zhu/dsh-cap-manager/re
 ```
 
 Replace `web` / `desktop` with your own profile name, restart dsh, then open
-**MCP & Skills** in the left sidebar.
-
-Once the package is on npm:
-
-```sh
-dsh plugin --profile web add dsh-cap-manager
-```
-
-> If pnpm's release cooldown resolves an older release, pin the version explicitly:
-> `dsh plugin --profile web add dsh-cap-manager@1.1.1`.
-> (The `github:` git shorthand builds from source — the repository ships no compiled `lib/`;
-> prefer the Release tarball or npm.)
+**MCP & Skills** in the left sidebar. (The `github:` git shorthand builds from
+source — the repository ships no compiled `lib/`; prefer npm or the tarball.)
 
 From a local checkout:
 
