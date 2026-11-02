@@ -97,10 +97,16 @@ dsh --profile web               # restart to load the plugin
 
 ### Optional: install through the plugin market
 
-Host [market/index.json](./market/index.json) anywhere http(s) reachable (GitHub Pages, a raw
-GitHub URL, your own server), then add the URL to the dsh **Discover** page (or the
-`plugin-market` `indexes` setting). The index pins `engines.dsh >= 0.2.1-rc.2` and installs
-from npm. Validate it any time with the upstream validator:
+Add the hosted index to the dsh **Discover** page (or the `plugin-market` `indexes` setting)
+for one-click installs:
+
+```
+https://easun-zhu.github.io/dsh-cap-manager/market/index.json
+```
+
+The index pins `engines.dsh >= 0.2.1-rc.2` and installs from npm. Self-hosting: copy
+[market/index.json](./market/index.json) to any http(s) location. Validate any time with the
+upstream validator:
 
 ```sh
 node --experimental-strip-types test/m5-smoke.ts   # includes market/index.json validation

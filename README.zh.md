@@ -94,10 +94,16 @@ dsh --profile web               # 重启以加载插件
 
 ### 可选：通过插件市场安装
 
-把 [market/index.json](./market/index.json) 托管到任意 http(s) 可访问的位置（GitHub
-Pages、GitHub raw、自己的服务器），再把 URL 添加到 dsh 的**发现**页（或
-`plugin-market` 的 `indexes` 配置）。索引声明了 `engines.dsh >= 0.2.1-rc.2`，安装源
-为 npm。可随时用上游校验器验证：
+把下面这个已托管的索引 URL 添加到 dsh 的**发现**页（或 `plugin-market` 的 `indexes`
+配置），即可一键安装：
+
+```
+https://easun-zhu.github.io/dsh-cap-manager/market/index.json
+```
+
+索引声明了 `engines.dsh >= 0.2.1-rc.2`，安装源为 npm。自托管：把
+[market/index.json](./market/index.json) 复制到任意 http(s) 位置即可。可随时用上游
+校验器验证：
 
 ```sh
 node --experimental-strip-types test/m5-smoke.ts   # 含 market/index.json 校验
